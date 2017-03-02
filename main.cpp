@@ -21,7 +21,7 @@ int main ()
   //menuMusic.setPosition(0, 1, 10);
   //menuMusic.setLoop(true);
   //menuMusic.play();
-  std::cout << "moi\n";
+  
   Game* pMyGame = new Game();
   while (window.isOpen ())
   {
