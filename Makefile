@@ -1,8 +1,16 @@
 TARGETS= main.o gameobject.o paddle.o ball.o game.o tile.o level.o
 CFLAGS= -Wall -pedantic -std=c++11
 
-all : $(TARGETS)
-	g++ -o Arkanoid $(TARGETS) -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system
+BUILDDIR = build
+EXECUTABLE = Arkanoid
+
+all : dir $(BUILDDIR)/$(EXECUTABLE)
+
+dir:
+	mkdir $(BUILDDIR)
+
+$(BUILDDIR)/$(EXECUTABLE): $(TARGETS)
+		g++ -o Arkanoid $(TARGETS) -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system
 
 main.o : main.cpp
 		g++ -c $(CFLAGS) main.cpp
