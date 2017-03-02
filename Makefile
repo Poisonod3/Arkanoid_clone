@@ -7,10 +7,6 @@ BUILDDIR= build
 all : $(OBJECTS)
 	$(CC) -o $(BUILDDIR)/Arkanoid $(OBJECTS) -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system
 
-print: *.o
-	lpr -p $?
-	touch print
-
 main.o : main.cpp
 	$(CC) -c $(CFLAGS) main.cpp
 
