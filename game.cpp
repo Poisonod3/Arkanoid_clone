@@ -105,14 +105,16 @@ void Game::CheckCollisions(){
   if(pBall->CheckCollision(leftWall, false));
   if(pBall->CheckCollision(rightWall, false));
 
-  //ball hits paddle
+  //  ball hits paddle
   if(pBall->CheckCollision(pPaddle->GetRect(), true));
 
+  // ball hits tile
   std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
   std::vector<Tile*>::iterator it;
   for(it = vectiles->begin(); it < vectiles->end(); it++){
     if((*it)->IsActive()){
       if(pBall->CheckCollision((*it)->GetRect(), false)){
+        pBall->SpeedUp(1.02f);
         (*it)->Hit();
       }
     }

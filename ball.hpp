@@ -21,4 +21,5 @@ public:
   sf::Vector2f setNewDirection(sf::Vector2f a, sf::Vector2f b, bool paddle);
   float Distance(sf::Vector2f a, sf::Vector2f b);
   float ShortestDistance(sf::Vector2f a, sf::Vector2f b);
+  void SpeedUp(float amount);
 };

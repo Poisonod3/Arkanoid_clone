@@ -172,8 +172,10 @@ sf::Vector2f Ball::setNewDirection(sf::Vector2f a, sf::Vector2f b, bool paddle){
     float angle = atan2(rVector.y, rVector.x)* 180 / 3.145f;
     //std::cout << angle << "\n";
 
+    // get vectors lenght
     length = sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
 
+    // set new angle and multiply with lenght
     velocity.x = sin(angle);
     velocity.y = cos(angle);
     velocity *= length;
@@ -192,4 +194,8 @@ float Ball::ShortestDistance(sf::Vector2f a, sf::Vector2f b){
     fabs(radius / 2 - Distance(a, sf::Vector2f(a.y, b.x)))));
 
   return d;
+}
+
+void Ball::SpeedUp(float amount){
+  this->velocity *= amount;
 }
