@@ -24,6 +24,7 @@ private:
   std::vector<Tile*> vecCurrTiles;
   bool GameStarted;
   bool gameOver;
+  float points;
   sf::Clock clock;
   float timer;
 public:
@@ -37,4 +38,6 @@ public:
   void Update(sf::Event event);
   void Render(sf::RenderWindow* pWindow);
   void readLevels(std::string filename);
+  void AddPoints(float amount);
+  void ResetPoints();
 };

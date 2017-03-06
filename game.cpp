@@ -19,6 +19,8 @@ Game::Game(){
   rightWall.setPosition(sf::Vector2f(600.0f, -50.0f)); //
   rightWall.setSize(sf::Vector2f(50.0f, 700.0f));
 
+  points = 0.0f;
+
   readLevels("levels.txt");
 
   timer = 0;
@@ -93,6 +95,8 @@ void Game::GameOver(){
   gameOver = true;
   GameStarted = false;
   std::cout << "GAME OVER!" << std::endl;
+  std::cout << "You got " << points << " points\n";
+  ResetPoints();
 }
 
 void Game::CheckCollisions(){
@@ -114,6 +118,11 @@ void Game::CheckCollisions(){
   for(it = vectiles->begin(); it < vectiles->end(); it++){
     if((*it)->IsActive()){
       if(pBall->CheckCollision((*it)->GetRect(), false)){
+        // multiply points with speed of ball
+        sf::Vector2f ballVelocity = pBall->getVelocity();
+        float ballSpeed = fabs(ballVelocity.x) + fabs(ballVelocity.y);
+        AddPoints(100.0f * log2(ballSpeed));
+
         pBall->SpeedUp(1.02f);
         (*it)->Hit();
       }
@@ -211,4 +220,12 @@ void Game::Render(sf::RenderWindow* pWindow){
   pWindow->draw(pPaddle->GetRect());
   pWindow->draw(pBall->shape);
   pWindow->display();
+}
+
+void Game::AddPoints(float amount){
+  this->points += amount;
+}
+
+void Game::ResetPoints(){
+  this->points = 0.0f;
 }

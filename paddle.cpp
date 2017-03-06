@@ -9,8 +9,8 @@ Paddle::Paddle () {
   this->shape.setFillColor(sf::Color::Cyan);
   this->speed =         sf::Vector2f(0.0f, 0.0f);
   this->targetSpeed =   sf::Vector2f(0.0f, 0.0f);
-  this->acceleration =  sf::Vector2f(150.0f, 1.0f);
-  this->MAX_speed =     sf::Vector2f(30.0f, 1.0f);
+  this->acceleration =  sf::Vector2f(100.0f, 1.0f);
+  this->MAX_speed =     sf::Vector2f(20.0f, 1.0f);
   this->targetPosition = sf::Vector2f(0.0f, 0.0f);
 
   std::cout << "New Paddle Created" << std::endl;
