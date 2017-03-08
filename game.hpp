@@ -16,7 +16,7 @@ private:
   sf::RectangleShape leftWall;
   sf::RectangleShape rightWall;
 
-  void HandleInput();
+  void HandleInput(sf::Event event);
   void CheckCollisions();
   int iLevel;
   int iCurrentLevel;
@@ -24,20 +24,24 @@ private:
   std::vector<Tile*> vecCurrTiles;
   bool GameStarted;
   bool gameOver;
-  float points;
+  int points;
   sf::Clock clock;
   float timer;
+  float slowMotionFactor;
 public:
 
   Game();
+  bool pause;
+  bool slowMotion;
 
   void NewGame();
   void StartGame();
   void NextLevel();
   void GameOver();
   void Update(sf::Event event);
-  void Render(sf::RenderWindow* pWindow);
+  void Render(sf::RenderWindow* pWindow, sf::Font font);
   void readLevels(std::string filename);
   void AddPoints(float amount);
   void ResetPoints();
+  void SlowMotion();
 };

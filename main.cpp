@@ -16,19 +16,25 @@ int main ()
   sf::RenderWindow window(sf::VideoMode (wWidth, wHeight), "Arkanoid", sf::Style::Default, settings);
   window.setFramerateLimit(60);
 
+  sf::Font font;
+  font.loadFromFile("./Fonts/Regular.ttf");
+
   // Music
   //sf::Music menuMusic;
   //menuMusic.setPosition(0, 1, 10);
   //menuMusic.setLoop(true);
   //menuMusic.play();
-  
+
   Game* pMyGame = new Game();
   while (window.isOpen ())
   {
     sf::Event event;
+
     while (window.pollEvent(event))
     {
-      if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape){
+      if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed
+          && event.key.code == sf::Keyboard::Escape))
+      {
         std::cout << "Game halted!" << std::endl;
         window.close();
       }
@@ -42,8 +48,10 @@ int main ()
       }
     }
 
-    pMyGame->Update(event);
-    pMyGame->Render(&window);
+    if(!pMyGame->pause){
+      pMyGame->Update(event);
+    }
+    pMyGame->Render(&window, font);
   }
   return 0;
 }

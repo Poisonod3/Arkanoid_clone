@@ -24,9 +24,12 @@ Game::Game(){
   readLevels("levels.txt");
 
   timer = 0;
+  slowMotion = false;
+  slowMotionFactor = 0.25f;
 
   iCurrentLevel = 0;
   GameStarted = false;
+  pause = false;
   gameOver = false;
   std::cout << "New game ready" << std::endl;
 }
@@ -37,8 +40,12 @@ void Game::Update(sf::Event event){
   {
     timer += dTime.asSeconds();
   }
+
+  if(slowMotion){
+    dTime *= slowMotionFactor;
+  }
   //std::cout << dTime.asSeconds() << std::endl;
-  this->HandleInput();
+  this->HandleInput(event);
 
   if(!gameOver){
     pPaddle->Update(dTime);
@@ -140,17 +147,20 @@ void Game::CheckCollisions(){
 }
 
 //void Game::HandleInput(sf::Event event){
-void Game::HandleInput(){
+void Game::HandleInput(sf::Event event){
   // Input, Left and Right
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+  {
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
       pPaddle->Move ( -1 );
     }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    {
       pPaddle->Move ( 1 );
     }
   }
-  if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+  else{
     pPaddle->Move ( 0 );
   }
 
@@ -160,6 +170,10 @@ void Game::HandleInput(){
 
   if(gameOver && !GameStarted && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
     NewGame();
+  }
+  if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
+  {
+    this->SlowMotion();
   }
 }
 
@@ -208,8 +222,33 @@ void Game::readLevels(std::string filename){
   }
 }
 
-void Game::Render(sf::RenderWindow* pWindow){
+void Game::AddPoints(float amount){
+  this->points += amount;
+}
+
+void Game::ResetPoints(){
+  this->points = 0.0f;
+}
+
+void Game::SlowMotion(){
+  if(slowMotion)
+  {
+    slowMotion = false;
+    std::cout << "Normal speed\n";
+  }
+  else
+  {
+    slowMotion = true;
+    std::cout << "SlowMotion\n";
+  }
+}
+
+void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
   pWindow->clear();
+  std::string txt = "Points: " + std::to_string(points);
+  sf::Text textPoints(txt, font);
+  textPoints.setCharacterSize(40);
+  textPoints.setColor(sf::Color::White);
 
   std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
   std::vector<Tile*>::iterator it;
@@ -221,13 +260,7 @@ void Game::Render(sf::RenderWindow* pWindow){
 
   pWindow->draw(pPaddle->GetRect());
   pWindow->draw(pBall->shape);
+  pWindow->draw(textPoints);
+
   pWindow->display();
-}
-
-void Game::AddPoints(float amount){
-  this->points += amount;
-}
-
-void Game::ResetPoints(){
-  this->points = 0.0f;
 }

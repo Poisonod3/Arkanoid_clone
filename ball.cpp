@@ -115,6 +115,7 @@ bool Ball::CheckCollision(sf::RectangleShape Rect, bool paddle)
     //  Now we have the corner and the point of the collision
     //  Lets set the ball to the right direction
     setNewDirection(collisionPoint, NearestCorner, paddle);
+
   }
 
   return collision;
