@@ -20,7 +20,7 @@ Game::Game(){
   rightWall.setSize(sf::Vector2f(50.0f, 700.0f));
 
   points = 0.0f;
-
+  addedPoints = false;
   readLevels("levels.txt");
 
   timer = 0;
@@ -32,6 +32,11 @@ Game::Game(){
   pause = false;
   gameOver = false;
   std::cout << "New game ready" << std::endl;
+}
+
+Game::~Game(){
+  delete(pBall);
+  delete(pPaddle);
 }
 
 void Game::Update(sf::Event event){
@@ -64,12 +69,15 @@ void Game::Update(sf::Event event){
       NextLevel();
     }
 
+    txt = "Points: " + std::to_string(points);
+    addedPoints = false;
     this->CheckCollisions();
   }
 }
 
 void Game::NewGame(){
   delete(pBall);
+  ResetPoints();
   //vecLevels.clear();
   //readLevels("levels.txt");
   timer = 0;
@@ -103,7 +111,6 @@ void Game::GameOver(){
   GameStarted = false;
   std::cout << "GAME OVER!" << std::endl;
   std::cout << "You got " << points << " points\n";
-  ResetPoints();
 }
 
 void Game::CheckCollisions(){
@@ -131,6 +138,7 @@ void Game::CheckCollisions(){
         sf::Vector2f ballVelocity = pBall->getVelocity();
         float ballSpeed = fabs(ballVelocity.x) + fabs(ballVelocity.y);
         AddPoints(100.0f * log10(ballSpeed));
+        addedPoints = true;
 
         pBall->SpeedUp(1.02f);
         (*it)->Hit();
@@ -244,11 +252,32 @@ void Game::SlowMotion(){
 }
 
 void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
-  pWindow->clear();
-  std::string txt = "Points: " + std::to_string(points);
+
   sf::Text textPoints(txt, font);
   textPoints.setCharacterSize(40);
-  textPoints.setColor(sf::Color::White);
+  textPoints.setPosition(sf::Vector2f(25.0f, 25.0f));
+  if(addedPoints || textAnimationTimer != 0.0f)
+  {
+      textAnimationTimer += clock.getElapsedTime().asSeconds() * 100;
+      if(fmod(textAnimationTimer, 0.075f) <= 0.035f)
+      {
+        textPoints.setCharacterSize(41);
+        textPoints.setColor(sf::Color::Blue);
+      }
+      else
+      {
+        textPoints.setColor(sf::Color::White);
+      }
+
+      if(textAnimationTimer >= 0.25f){
+        textAnimationTimer = 0.0f;
+      }
+  }else
+  {
+    textPoints.setCharacterSize(40);
+    textPoints.setColor(sf::Color::White);
+  }
+  pWindow->clear();
 
   std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
   std::vector<Tile*>::iterator it;

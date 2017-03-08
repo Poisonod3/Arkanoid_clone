@@ -9,7 +9,6 @@ class Game{
 private:
   Ball* pBall;
   Paddle* pPaddle;
-  Tile* pTile;
 
   sf::RectangleShape bottomWall;
   sf::RectangleShape topWall;
@@ -28,9 +27,13 @@ private:
   sf::Clock clock;
   float timer;
   float slowMotionFactor;
+  std::string txt;
+  bool addedPoints;
+  float textAnimationTimer;
 public:
 
   Game();
+  ~Game();
   bool pause;
   bool slowMotion;
 
