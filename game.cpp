@@ -33,7 +33,6 @@ Game::Game(){
 
 void Game::Update(sf::Event event){
   sf::Time dTime = clock.restart();
-
   if(GameStarted)
   {
     timer += dTime.asSeconds();
@@ -44,6 +43,7 @@ void Game::Update(sf::Event event){
   if(!gameOver){
     pPaddle->Update(dTime);
     pBall->Update(dTime);
+
     std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
     std::vector<Tile*>::iterator it;
     int activeTiles = 0;
@@ -101,6 +101,8 @@ void Game::GameOver(){
 
 void Game::CheckCollisions(){
 
+  // ball can hit only once in update cycle
+  bool collision = false;
   if(pBall->CheckCollision(bottomWall, false)){
     std::cout << "Ball out of bounds!\n";
     GameOver();
@@ -116,12 +118,12 @@ void Game::CheckCollisions(){
   std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
   std::vector<Tile*>::iterator it;
   for(it = vectiles->begin(); it < vectiles->end(); it++){
-    if((*it)->IsActive()){
+    if((*it)->IsActive() && !collision){
       if(pBall->CheckCollision((*it)->GetRect(), false)){
         // multiply points with speed of ball
         sf::Vector2f ballVelocity = pBall->getVelocity();
         float ballSpeed = fabs(ballVelocity.x) + fabs(ballVelocity.y);
-        AddPoints(100.0f * log2(ballSpeed));
+        AddPoints(100.0f * log10(ballSpeed));
 
         pBall->SpeedUp(1.02f);
         (*it)->Hit();
