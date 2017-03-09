@@ -12,6 +12,21 @@ Paddle::Paddle () {
   this->acceleration =  sf::Vector2f(100.0f, 1.0f);
   this->MAX_speed =     sf::Vector2f(20.0f, 1.0f);
   this->targetPosition = sf::Vector2f(0.0f, 0.0f);
+  this->lives = 3;
+
+  std::cout << "New Paddle Created" << std::endl;
+}
+
+Paddle::Paddle (int newLives) {
+  this->shape.setPosition(sf::Vector2f(300.0f, 500.0f));
+  this->shape.setSize(sf::Vector2f(100.0f, 20.0f));
+  this->shape.setFillColor(sf::Color::Cyan);
+  this->speed =         sf::Vector2f(0.0f, 0.0f);
+  this->targetSpeed =   sf::Vector2f(0.0f, 0.0f);
+  this->acceleration =  sf::Vector2f(100.0f, 1.0f);
+  this->MAX_speed =     sf::Vector2f(20.0f, 1.0f);
+  this->targetPosition = sf::Vector2f(0.0f, 0.0f);
+  this->lives = newLives;
 
   std::cout << "New Paddle Created" << std::endl;
 }
@@ -78,4 +93,19 @@ sf::Vector2f Paddle::GetRectSize(){
 
 void Paddle::SetTargetPosition(sf::Vector2f newTargetPos){
   this->targetPosition = newTargetPos;
+}
+
+int Paddle::getLives(){
+  return lives;
+}
+
+bool Paddle::OutOfLives(){
+  if(lives == 0)
+    return true;
+  else
+    return false;
+}
+
+void Paddle::Dead(){
+  lives--;
 }

@@ -77,7 +77,9 @@ void Game::Update(sf::Event event){
 
 void Game::NewGame(){
   delete(pBall);
-  ResetPoints();
+  if(pPaddle->OutOfLives()){
+    ResetPoints();
+  }
   textAnimationTimer = 0.0f;
   timer = 0;
   iCurrentLevel = 0;
@@ -106,6 +108,7 @@ void Game::NextLevel(){
 }
 
 void Game::GameOver(){
+  pPaddle->Dead();
   gameOver = true;
   GameStarted = false;
   std::cout << "GAME OVER!" << std::endl;
@@ -284,7 +287,9 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
   if(gameOver){
     textAnimationTimer += dTime.asSeconds();
 
-    textPoints.setPosition(200, 200);
+    if(pPaddle->OutOfLives()){
+      textPoints.setPosition(200, 200);
+    }
     if(fmod(textAnimationTimer, 1.0f) < 0.5f)
     {
       textPoints.setCharacterSize(41);
@@ -295,6 +300,7 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
       textPoints.setColor(sf::Color::White);
     }
   }
+
   pWindow->clear();
 
   std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
@@ -307,6 +313,19 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
 
   pWindow->draw(pPaddle->GetRect());
   pWindow->draw(pBall->shape);
+
+  if(!pPaddle->OutOfLives())
+  {
+    int playerLives = pPaddle->getLives();
+    for(int i = 0; i < playerLives; i++){
+      sf::RectangleShape shape;
+      shape.setPosition(sf::Vector2f(25.0f + i * 30.0f, 5.0f));
+      shape.setSize(sf::Vector2f(25.0f, 5.0f));
+      shape.setFillColor(sf::Color::Cyan);
+      pWindow->draw(shape);
+    }
+  }
+
   pWindow->draw(textPoints);
 
   pWindow->display();
