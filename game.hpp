@@ -25,6 +25,7 @@ private:
   bool gameOver;
   int points;
   sf::Clock clock;
+  sf::Time dTime;
   float timer;
   float slowMotionFactor;
   std::string txt;

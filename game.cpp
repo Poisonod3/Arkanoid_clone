@@ -40,7 +40,7 @@ Game::~Game(){
 }
 
 void Game::Update(sf::Event event){
-  sf::Time dTime = clock.restart();
+  dTime = clock.restart();
   if(GameStarted)
   {
     timer += dTime.asSeconds();
@@ -78,8 +78,7 @@ void Game::Update(sf::Event event){
 void Game::NewGame(){
   delete(pBall);
   ResetPoints();
-  //vecLevels.clear();
-  //readLevels("levels.txt");
+  textAnimationTimer = 0.0f;
   timer = 0;
   iCurrentLevel = 0;
   GameStarted = false;
@@ -256,26 +255,45 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
   sf::Text textPoints(txt, font);
   textPoints.setCharacterSize(40);
   textPoints.setPosition(sf::Vector2f(25.0f, 25.0f));
-  if(addedPoints || textAnimationTimer != 0.0f)
+  if(addedPoints || (!gameOver && textAnimationTimer != 0.0f))
   {
-      textAnimationTimer += clock.getElapsedTime().asSeconds() * 100;
-      if(fmod(textAnimationTimer, 0.075f) <= 0.035f)
-      {
-        textPoints.setCharacterSize(41);
-        textPoints.setColor(sf::Color::Blue);
-      }
-      else
-      {
-        textPoints.setColor(sf::Color::White);
-      }
+    if(addedPoints){
+      textAnimationTimer = 0.0f;
+    }
+    textAnimationTimer += dTime.asSeconds();
+    if(fmod(textAnimationTimer, 0.075f) <= 0.035f)
+    {
+      textPoints.setCharacterSize(41);
+      textPoints.setColor(sf::Color::Blue);
+    }
+    else
+    {
+      textPoints.setColor(sf::Color::White);
+    }
 
-      if(textAnimationTimer >= 0.25f){
-        textAnimationTimer = 0.0f;
-      }
-  }else
+    if(textAnimationTimer >= 0.25f){
+      textAnimationTimer = 0.0f;
+      addedPoints = false;
+    }
+}else
   {
     textPoints.setCharacterSize(40);
     textPoints.setColor(sf::Color::White);
+  }
+
+  if(gameOver){
+    textAnimationTimer += dTime.asSeconds();
+
+    textPoints.setPosition(200, 200);
+    if(fmod(textAnimationTimer, 1.0f) < 0.5f)
+    {
+      textPoints.setCharacterSize(41);
+      textPoints.setColor(sf::Color::Red);
+    }
+    else
+    {
+      textPoints.setColor(sf::Color::White);
+    }
   }
   pWindow->clear();
 
