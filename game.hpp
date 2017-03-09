@@ -4,6 +4,7 @@
 #include "paddle.hpp"
 #include "ball.hpp"
 #include "level.hpp"
+#include "yield.hpp"
 
 class Game{
 private:
@@ -20,7 +21,9 @@ private:
   int iLevel;
   int iCurrentLevel;
   std::vector<Level*> vecLevels;
-  std::vector<Tile*> vecCurrTiles;
+
+  std::vector<Yield*> vecYield;
+
   bool GameStarted;
   bool gameOver;
   int points;

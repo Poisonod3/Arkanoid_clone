@@ -45,7 +45,7 @@ void Tile::Update()
       active = false;
       break;
     default:
-      std::cout << "Something went wrong!\n";
+      shape.setFillColor(sf::Color::White);
       break;
   }
 }

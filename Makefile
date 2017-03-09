@@ -1,5 +1,5 @@
 CC = g++
-OBJECTS= main.o gameobject.o paddle.o ball.o game.o tile.o level.o
+OBJECTS= main.o gameobject.o paddle.o ball.o game.o tile.o level.o yield.o
 CFLAGS= -Wall -pedantic -std=c++11
 
 BUILDDIR= build
@@ -28,5 +28,7 @@ tile.o : tile.cpp tile.hpp
 level.o : level.cpp level.hpp
 	$(CC) -c $(CFLAGS) level.cpp
 
+yield.o : yield.cpp yield.hpp
+	$(CC) -c $(CFLAGS) yield.cpp
 clean :
 	rm -f *.o Arkanoid

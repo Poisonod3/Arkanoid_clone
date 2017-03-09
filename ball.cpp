@@ -25,10 +25,7 @@ void Ball::Start(){
   sf::Vector2f StartVector = sf::Vector2f((rand() % 8 - 4) * 10,
                                             ((rand() % 10 + 1) * 10) * -1);
 
-  float length = sqrt((StartVector.x * StartVector.x) + (StartVector.y * StartVector.y));
-  // normalize the vector
-  StartVector.x /= length;
-  StartVector.y /= length;
+  StartVector = Normalize(StartVector);
   StartVector *= 400.0f;
   setVelocity(StartVector);
 }
@@ -173,10 +170,10 @@ sf::Vector2f Ball::setNewDirection(sf::Vector2f a, sf::Vector2f b, bool paddle){
     float angle = atan2(rVector.y, rVector.x)* 180 / 3.145f;
     //std::cout << angle << "\n";
 
-    // get vectors lenght
+    // get vectors length
     length = sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
 
-    // set new angle and multiply with lenght
+    // set new angle and multiply with length
     velocity.x = sin(angle);
     velocity.y = cos(angle);
     velocity *= length;
@@ -197,6 +194,26 @@ float Ball::ShortestDistance(sf::Vector2f a, sf::Vector2f b){
   return d;
 }
 
+float Ball::VectorLength(sf::Vector2f v){
+  float length = sqrt((v.x * v.x) + (v.y * v.y));
+
+  return length;
+}
+
+sf::Vector2f Ball::Normalize(sf::Vector2f v){
+  float length = VectorLength(v);
+  // normalize the vector
+  v.x /= length;
+  v.y /= length;
+
+  return v;
+}
+
 void Ball::SpeedUp(float amount){
-  this->velocity *= amount;
+  sf::Vector2f rVector = Normalize(velocity);
+
+  float length = VectorLength(velocity);
+
+  rVector *= length + 10.0f;
+  velocity = rVector;
 }

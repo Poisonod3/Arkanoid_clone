@@ -37,6 +37,7 @@ Game::Game(){
 Game::~Game(){
   delete(pBall);
   delete(pPaddle);
+  vecLevels.clear();
 }
 
 void Game::Update(sf::Event event){
@@ -55,6 +56,8 @@ void Game::Update(sf::Event event){
   if(!gameOver){
     pPaddle->Update(dTime);
     pBall->Update(dTime);
+
+    
 
     std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
     std::vector<Tile*>::iterator it;
@@ -78,11 +81,15 @@ void Game::Update(sf::Event event){
 void Game::NewGame(){
   delete(pBall);
   if(pPaddle->OutOfLives()){
+    iCurrentLevel = 0;
+    vecLevels.clear();
+    readLevels("levels.txt");
     ResetPoints();
+    delete(pPaddle);
+    pPaddle = new Paddle();
   }
   textAnimationTimer = 0.0f;
   timer = 0;
-  iCurrentLevel = 0;
   GameStarted = false;
   gameOver = false;
   pBall = new Ball();
@@ -141,6 +148,10 @@ void Game::CheckCollisions(){
         float ballSpeed = fabs(ballVelocity.x) + fabs(ballVelocity.y);
         AddPoints(100.0f * log10(ballSpeed));
         addedPoints = true;
+
+        // Yield
+        Yield* pYield = new Yield;
+        vecYield.push_back(pYield);
 
         pBall->SpeedUp(1.02f);
         (*it)->Hit();
@@ -206,7 +217,6 @@ void Game::readLevels(std::string filename){
       for(char& c : line){
         if(c == '-'){
           std::cout << "Added " << iTiles << " tiles" << std::endl;
-          iLevel++;
           iTileRow = 0;
           iTileCol = 0;
           vecLevels.insert (vecLevels.end(),pLevel);
@@ -314,13 +324,16 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
   pWindow->draw(pPaddle->GetRect());
   pWindow->draw(pBall->shape);
 
+  //  Draw player lives in top left corner of the screen
   if(!pPaddle->OutOfLives())
   {
     int playerLives = pPaddle->getLives();
     for(int i = 0; i < playerLives; i++){
       sf::RectangleShape shape;
-      shape.setPosition(sf::Vector2f(25.0f + i * 30.0f, 5.0f));
-      shape.setSize(sf::Vector2f(25.0f, 5.0f));
+      sf::RectangleShape paddleShape = pPaddle->GetRect();
+      shape.setPosition(sf::Vector2f(25.0f + i * (paddleShape.getSize().x / 4 + 10.0f),
+        paddleShape.getSize().y / 4));
+      shape.setSize(sf::Vector2f(paddleShape.getSize().x / 4, paddleShape.getSize().y / 4));
       shape.setFillColor(sf::Color::Cyan);
       pWindow->draw(shape);
     }
