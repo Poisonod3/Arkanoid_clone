@@ -1,5 +1,8 @@
 #include <SFML/Graphics.hpp>
 
+#ifndef GameObject_hpp
+#define GameObject_hpp
+
 class GameObject
 {
 protected:
@@ -16,3 +19,5 @@ public:
   void setPosition(sf::Vector2f newPosition);
   void setVelocity(sf::Vector2f newVelocity);
 };
+
+#endif  // GameObject_hpp

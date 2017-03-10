@@ -7,7 +7,7 @@
 Ball::Ball () {
   position.x = 300;
   position.y = 450;
-  radius = 20.0f;
+  radius = 15.0f;
 
   // setVelocity(sf::Vector2f(200.0f, -200.0f));
 
