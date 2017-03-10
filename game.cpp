@@ -57,7 +57,9 @@ void Game::Update(sf::Event event){
     pPaddle->Update(dTime);
     pBall->Update(dTime);
 
-    
+    for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
+      (*it)->Update(dTime);
+    }
 
     std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
     std::vector<Tile*>::iterator it;
@@ -106,6 +108,7 @@ void Game::StartGame(){
 
 void Game::NextLevel(){
   delete(pBall);
+  vecYield.clear();
   iCurrentLevel++;
   GameStarted = false;
   pBall = new Ball();
@@ -150,7 +153,7 @@ void Game::CheckCollisions(){
         addedPoints = true;
 
         // Yield
-        Yield* pYield = new Yield;
+        Yield* pYield = new Yield((*it)->GetRect().getPosition());
         vecYield.push_back(pYield);
 
         pBall->SpeedUp(1.02f);
@@ -159,12 +162,9 @@ void Game::CheckCollisions(){
     }
   }
 
-  /*
-  if(pTile->IsActive()){
-    if(pBall->CheckCollision(pTile->GetRect(), false)){
-      pTile->Destroy();
-    }
-  }*/
+  for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
+    (*it)->Update(dTime);
+  }
 }
 
 //void Game::HandleInput(sf::Event event){
@@ -312,6 +312,12 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
   }
 
   pWindow->clear();
+
+
+  for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
+    pWindow->draw((*it)->GetRect());
+  }
+
 
   std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
   std::vector<Tile*>::iterator it;

@@ -163,7 +163,7 @@ sf::Vector2f Ball::setNewDirection(sf::Vector2f a, sf::Vector2f b, bool paddle){
     // normalize the vector
     rVector.x /= length;
     rVector.y /= length;
-    if(paddle && rVector.y < 0){
+    if(paddle && rVector.y > 0){
       rVector.y *= -1;
     }
     // get vectors angle (in degrees)

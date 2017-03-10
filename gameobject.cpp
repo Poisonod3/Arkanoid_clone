@@ -29,10 +29,6 @@ GameObject::~GameObject(){
 
 }
 
-void GameObject::Update(sf::Time dTime){
-  position += velocity * dTime.asSeconds();
-}
-
 sf::Vector2f GameObject::getPosition(){
   return position;
 }

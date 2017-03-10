@@ -13,7 +13,6 @@ public:
   GameObject(sf::Vector2f newPosition);
   GameObject(sf::Vector2f newPosition, sf::Vector2f newVelocity);
   ~GameObject();
-  void Update(sf::Time dTime);
   sf::Vector2f getPosition();
   sf::Vector2f getVelocity();
   void setPosition(sf::Vector2f newPosition);
