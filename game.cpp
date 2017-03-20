@@ -160,6 +160,15 @@ void Game::CheckCollisions(){
         (*it)->Hit();
       }
     }
+
+    // Yield hits paddle
+    if(!vecYield.empty()){
+      for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
+        if((*it)->isActive() && (*it)->CheckCollision(pPaddle->GetRect())){
+        (*it)->Hit();
+        }
+      }
+    }
   }
 
   for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
@@ -315,7 +324,9 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
 
 
   for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
-    pWindow->draw((*it)->GetRect());
+    if((*it)->isActive()){
+      pWindow->draw((*it)->GetRect());
+    }
   }
 
 

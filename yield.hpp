@@ -5,10 +5,15 @@ class Yield: public GameObject
 {
 protected:
   sf::RectangleShape shape;
+  bool active;
+  int type;
+  float rotationSpeed;
+
 public:
-  Yield();
   Yield(sf::Vector2f startPos);
-  ~Yield();
   void Update(sf::Time dTime);
   sf::RectangleShape GetRect();
+  bool CheckCollision(sf::RectangleShape a);
+  void Hit();
+  bool isActive();
 };
