@@ -19,7 +19,8 @@ Game::Game(){
   rightWall.setPosition(sf::Vector2f(600.0f, -50.0f)); //
   rightWall.setSize(sf::Vector2f(50.0f, 700.0f));
 
-  points = 0.0f;
+  points = 0;
+  multiplier = 1.0f;
   addedPoints = false;
   readLevels("levels.txt");
 
@@ -50,8 +51,19 @@ void Game::Update(sf::Event event){
   if(slowMotion){
     dTime *= slowMotionFactor;
   }
-  //std::cout << dTime.asSeconds() << std::endl;
-  this->HandleInput(event);
+
+  HandleInput(event);
+
+  if(multiplier > 1.0f) {
+    multiplierTimer += dTime.asSeconds();
+    if(multiplierTimer > 2.0f) {
+      multiplier--;
+      multiplierTimer = 0.0f;
+    }
+  }
+  if(multiplier < 1.0f) {
+    multiplier = 1.0f;
+  }
 
   if(!gameOver){
     pPaddle->Update(dTime);
@@ -75,6 +87,10 @@ void Game::Update(sf::Event event){
     }
 
     txt = "Points: " + std::to_string(points);
+    if(multiplier > 1.0f){
+      txt.append(" x");
+      txt.append(std::to_string(int(multiplier)));
+    }
     addedPoints = false;
     this->CheckCollisions();
   }
@@ -119,6 +135,8 @@ void Game::NextLevel(){
 
 void Game::GameOver(){
   pPaddle->Dead();
+  vecYield.clear();
+  multiplier = 1.0f;
   gameOver = true;
   GameStarted = false;
   std::cout << "GAME OVER!" << std::endl;
@@ -146,10 +164,7 @@ void Game::CheckCollisions(){
   for(it = vectiles->begin(); it < vectiles->end(); it++){
     if((*it)->IsActive() && !collision){
       if(pBall->CheckCollision((*it)->GetRect(), false)){
-        // multiply points with speed of ball
-        sf::Vector2f ballVelocity = pBall->getVelocity();
-        float ballSpeed = fabs(ballVelocity.x) + fabs(ballVelocity.y);
-        AddPoints(100.0f * log10(ballSpeed));
+        AddPoints(10.0f * (*it)->Hit());
         addedPoints = true;
 
         // Yield
@@ -157,7 +172,6 @@ void Game::CheckCollisions(){
         vecYield.push_back(pYield);
 
         pBall->SpeedUp(1.02f);
-        (*it)->Hit();
       }
     }
 
@@ -165,7 +179,8 @@ void Game::CheckCollisions(){
     if(!vecYield.empty()){
       for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
         if((*it)->isActive() && (*it)->CheckCollision(pPaddle->GetRect())){
-        (*it)->Hit();
+          (*it)->Hit();
+          AddMultiplier();
         }
       }
     }
@@ -252,7 +267,7 @@ void Game::readLevels(std::string filename){
 }
 
 void Game::AddPoints(float amount){
-  this->points += amount;
+  this->points += amount * multiplier;
 }
 
 void Game::ResetPoints(){
@@ -270,6 +285,16 @@ void Game::SlowMotion(){
     slowMotion = true;
     std::cout << "SlowMotion\n";
   }
+}
+
+void Game::AddMultiplier() {
+  multiplier++;
+  multiplierTimer = 0.0f;
+}
+
+void Game::AddMultiplier(int k) {
+  multiplier += k;
+  multiplierTimer = 0.0f;
 }
 
 void Game::Render(sf::RenderWindow* pWindow, sf::Font font){

@@ -14,7 +14,7 @@ public:
   Tile(int h);
   Tile(sf::Vector2f newPos, int h);
   void Update();
-  void Hit();
+  int Hit();
   void Destroy();
   bool IsActive();
   sf::RectangleShape GetRect();

@@ -20,13 +20,16 @@ private:
   void CheckCollisions();
   int iLevel;
   int iCurrentLevel;
-  std::vector<Level*> vecLevels;
 
+  std::vector<Level*> vecLevels;
   std::vector<Yield*> vecYield;
 
   bool GameStarted;
   bool gameOver;
   int points;
+  float multiplier;
+  float multiplierTimer;
+
   sf::Clock clock;
   sf::Time dTime;
   float timer;
@@ -49,6 +52,8 @@ public:
   void Render(sf::RenderWindow* pWindow, sf::Font font);
   void readLevels(std::string filename);
   void AddPoints(float amount);
+  void AddMultiplier();
+  void AddMultiplier(int k);
   void ResetPoints();
   void SlowMotion();
 };

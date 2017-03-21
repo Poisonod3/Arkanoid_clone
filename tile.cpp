@@ -50,8 +50,9 @@ void Tile::Update()
   }
 }
 
-void Tile::Hit(){
+int Tile::Hit(){
   hits--;
+  return hits + 1;
 }
 
 void Tile::Destroy(){
