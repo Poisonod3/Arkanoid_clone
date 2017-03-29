@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Sound.hpp>
 #include <vector>
 
 #include "paddle.hpp"
@@ -10,6 +11,9 @@ class Game{
 private:
   Ball* pBall;
   Paddle* pPaddle;
+
+  sf::SoundBuffer buffer;
+  sf::Sound BoingSound;
 
   sf::RectangleShape bottomWall;
   sf::RectangleShape topWall;

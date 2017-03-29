@@ -9,8 +9,6 @@ Ball::Ball () {
   position.y = 450;
   radius = 15.0f;
 
-  // setVelocity(sf::Vector2f(200.0f, -200.0f));
-
   shape.setRadius(radius);
   shape.setFillColor(sf::Color::White);
   shape.setPosition(sf::Vector2f(position.x - radius, position.y - radius));
