@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "game.hpp"
 
 Game::Game(){
@@ -8,7 +9,7 @@ Game::Game(){
   pPaddle = new Paddle();
 
   if(!buffer.loadFromFile("./sound/boing.wav"));
-  
+
 
   bottomWall.setPosition(sf::Vector2f(-50.0f, 640.0f)); // bottombottomWall, instadeath
   bottomWall.setSize(sf::Vector2f(700.0f, 50.0f));
@@ -79,10 +80,13 @@ void Game::Update(sf::Event event){
     std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
     std::vector<Tile*>::iterator it;
     int activeTiles = 0;
-    for(it = vectiles->begin(); it < vectiles->end(); it++){
-      if((*it)->IsActive()){
-        (*it)->Update();
-        activeTiles++;
+    
+    if(vectiles != NULL){
+      for(it = vectiles->begin(); it < vectiles->end(); it++){
+        if((*it)->IsActive()){
+          (*it)->Update();
+          activeTiles++;
+        }
       }
     }
     if(activeTiles == 0){
@@ -125,6 +129,13 @@ void Game::StartGame(){
   std::cout << "Game started" << std::endl;
 }
 
+void Game::StartGame(sf::Vector2f mousePos){
+  gameOver = false;
+  GameStarted = true;
+  pBall->Start(mousePos);
+  std::cout << "Game started" << std::endl;
+}
+
 void Game::NextLevel(){
   delete(pBall);
   vecYield.clear();
@@ -144,6 +155,7 @@ void Game::GameOver(){
   GameStarted = false;
   std::cout << "GAME OVER!" << std::endl;
   std::cout << "You got " << points << " points\n";
+  ReadHighscores("highscores.txt");
 }
 
 void Game::CheckCollisions(){
@@ -223,6 +235,11 @@ void Game::HandleInput(sf::Event event){
   {
     this->SlowMotion();
   }
+  if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && !GameStarted && !gameOver){
+    sf::Mouse mouse;
+    sf::Vector2f mousePos = sf::Vector2f(float(mouse.getPosition().x),float(mouse.getPosition().y));
+    StartGame(mousePos);
+  }
 }
 
 void Game::readLevels(std::string filename){
@@ -298,6 +315,34 @@ void Game::AddMultiplier() {
 void Game::AddMultiplier(int k) {
   multiplier += k;
   multiplierTimer = 0.0f;
+}
+
+void Game::ReadHighscores (std::string filename) {
+  std::cout << "Highscores :\n";
+  std::ifstream ifs;
+  ifs.open(filename.c_str());
+
+  if(ifs.is_open()){
+    std::string line;
+    Highscore highscores[9];
+    int i = 0;
+
+    while(getline(ifs, line) && i < 10){
+      highscores[i];
+      std::string nickname;
+      std::string score;
+      
+      highscores[i].nickname = line.substr (0, line.find_first_of(':'));
+      highscores[i].score = stoi(line.substr (line.find_first_of(':') + 1));
+
+      std::cout << highscores[i].nickname << " : " << highscores[i].score << std::endl;
+      i++;
+    }
+  }
+}
+
+void Game::SetHighscore () {
+
 }
 
 void Game::Render(sf::RenderWindow* pWindow, sf::Font font){

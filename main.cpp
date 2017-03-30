@@ -36,7 +36,6 @@ int main ()
           && event.key.code == sf::Keyboard::Escape))
       {
         std::cout << "Game halted!" << std::endl;
-        delete(pMyGame);
         window.close();
       }
 
@@ -54,5 +53,6 @@ int main ()
     }
     pMyGame->Render(&window, font);
   }
+  delete pMyGame;
   return 0;
 }

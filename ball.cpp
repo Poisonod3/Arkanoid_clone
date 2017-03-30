@@ -28,6 +28,14 @@ void Ball::Start(){
   setVelocity(StartVector);
 }
 
+void Ball::Start(sf::Vector2f mousePos){
+  sf::Vector2f StartVector;
+  StartVector = mousePos - position;
+  StartVector = Normalize(StartVector);
+  StartVector *= 400.0f;
+  setVelocity(StartVector);
+}
+
 void Ball::Update (sf::Time dTime) {
   lastPos = position;
   setPosition(position + velocity * dTime.asSeconds());

@@ -14,6 +14,7 @@ public:
   Ball();
   ~Ball();
   void Start();
+  void Start(sf::Vector2f mousePos);
   void Update(sf::Time dTime);
   sf::Vector2f getPos();
   bool CheckCollision(sf::RectangleShape Rect, bool paddle);

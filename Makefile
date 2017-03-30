@@ -1,6 +1,6 @@
 CC = g++
 OBJECTS= main.o gameobject.o paddle.o ball.o game.o tile.o level.o yield.o
-CFLAGS= -Wall -pedantic -std=c++11
+CFLAGS= -Wall -pedantic -std=c++11 -g
 
 BUILDDIR= build
 

@@ -1,11 +1,16 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Sound.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 
 #include "paddle.hpp"
 #include "ball.hpp"
 #include "level.hpp"
 #include "yield.hpp"
+
+struct Highscore {
+  std::string nickname;
+  int score;
+};
 
 class Game{
 private:
@@ -50,6 +55,7 @@ public:
 
   void NewGame();
   void StartGame();
+  void StartGame(sf::Vector2f mousePos);
   void NextLevel();
   void GameOver();
   void Update(sf::Event event);
@@ -59,5 +65,7 @@ public:
   void AddMultiplier();
   void AddMultiplier(int k);
   void ResetPoints();
+  void ReadHighscores(std::string filename);
+  void SetHighscore();
   void SlowMotion();
 };
