@@ -26,6 +26,8 @@ int main ()
   //menuMusic.play();
 
   Game* pMyGame = new Game();
+  bool slomoButtonPressed = false;
+  bool pauseButtonPressed = false;
   while (window.isOpen ())
   {
     sf::Event event;
@@ -46,11 +48,27 @@ int main ()
       if (event.type == sf::Event::GainedFocus){
         //menuMusic.play();
       }
+      if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S && !slomoButtonPressed)
+      {
+        pMyGame->SlowMotion();
+        slomoButtonPressed = true;
+      }
+      if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::S)
+      {
+        slomoButtonPressed = false;
+      }
+      if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P && !pauseButtonPressed)
+      {
+        pMyGame->Pause();
+        pauseButtonPressed = true;
+      }
+      if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::P)
+      {
+        pauseButtonPressed = false;
+      }
     }
 
-    if(!pMyGame->pause){
-      pMyGame->Update(event);
-    }
+    pMyGame->Update(event);
     pMyGame->Render(&window, font);
   }
   delete pMyGame;

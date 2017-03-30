@@ -69,7 +69,7 @@ void Game::Update(sf::Event event){
     multiplier = 1.0f;
   }
 
-  if(!gameOver){
+  if(!gameOver && !pause){
     pPaddle->Update(dTime);
     pBall->Update(dTime);
 
@@ -80,7 +80,7 @@ void Game::Update(sf::Event event){
     std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
     std::vector<Tile*>::iterator it;
     int activeTiles = 0;
-    
+
     if(vectiles != NULL){
       for(it = vectiles->begin(); it < vectiles->end(); it++){
         if((*it)->IsActive()){
@@ -136,6 +136,10 @@ void Game::StartGame(sf::Vector2f mousePos){
   std::cout << "Game started" << std::endl;
 }
 
+void Game::Pause () {
+  pause = !pause;
+}
+
 void Game::NextLevel(){
   delete(pBall);
   vecYield.clear();
@@ -156,6 +160,8 @@ void Game::GameOver(){
   std::cout << "GAME OVER!" << std::endl;
   std::cout << "You got " << points << " points\n";
   ReadHighscores("highscores.txt");
+  std::cout << CheckIfHighscore() << std::endl;
+  PrintHighscores();
 }
 
 void Game::CheckCollisions(){
@@ -179,7 +185,8 @@ void Game::CheckCollisions(){
   for(it = vectiles->begin(); it < vectiles->end(); it++){
     if((*it)->IsActive() && !collision){
       if(pBall->CheckCollision((*it)->GetRect(), false)){
-        AddPoints(10.0f * (*it)->Hit());
+        AddPoints(10.0f);
+        (*it)->Hit();
         addedPoints = true;
 
         // Yield
@@ -231,10 +238,7 @@ void Game::HandleInput(sf::Event event){
   if(gameOver && !GameStarted && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
     NewGame();
   }
-  if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
-  {
-    this->SlowMotion();
-  }
+
   if(sf::Mouse::isButtonPressed(sf::Mouse::Left) && !GameStarted && !gameOver){
     sf::Mouse mouse;
     sf::Vector2f mousePos = sf::Vector2f(float(mouse.getPosition().x),float(mouse.getPosition().y));
@@ -287,7 +291,10 @@ void Game::readLevels(std::string filename){
 }
 
 void Game::AddPoints(float amount){
-  this->points += amount * multiplier;
+  amount *= multiplier;
+  if(slowMotion)
+    amount /= 2;
+  this->points += amount;
 }
 
 void Game::ResetPoints(){
@@ -318,30 +325,52 @@ void Game::AddMultiplier(int k) {
 }
 
 void Game::ReadHighscores (std::string filename) {
+  Highscores.clear();
   std::cout << "Highscores :\n";
   std::ifstream ifs;
   ifs.open(filename.c_str());
 
   if(ifs.is_open()){
     std::string line;
-    Highscore highscores[9];
     int i = 0;
 
     while(getline(ifs, line) && i < 10){
-      highscores[i];
-      std::string nickname;
-      std::string score;
-      
-      highscores[i].nickname = line.substr (0, line.find_first_of(':'));
-      highscores[i].score = stoi(line.substr (line.find_first_of(':') + 1));
+      Highscore hs;
+      hs.nickname = line.substr (0, line.find_first_of(':'));
+      hs.score = stoi(line.substr (line.find_first_of(':') + 1));
 
-      std::cout << highscores[i].nickname << " : " << highscores[i].score << std::endl;
+      Highscores.push_back(hs);
+
       i++;
+    }
+  }
+  SortHighscores();
+}
+
+void Game::PrintHighscores () {
+  for(unsigned int i = 0; i < Highscores.size(); i++){
+    std::cout << Highscores[i].nickname << " : " << Highscores[i].score << std::endl;
+  }
+}
+
+void Game::SortHighscores () {
+  Highscore temp;
+  for(unsigned int i = 1; i < Highscores.size(); i++){
+    if(Highscores[i].score > Highscores[i - 1].score){
+      temp = Highscores[i - 1];
+      Highscores[i - 1] = Highscores[i];
+      Highscores[i] = temp;
     }
   }
 }
 
-void Game::SetHighscore () {
+bool Game::CheckIfHighscore(){
+  if(points > Highscores.back().score)
+    return true;
+  return false;
+}
+
+void Game::SetNewHighscores () {
 
 }
 
@@ -350,30 +379,50 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
   sf::Text textPoints(txt, font);
   textPoints.setCharacterSize(40);
   textPoints.setPosition(sf::Vector2f(25.0f, 25.0f));
-  if(addedPoints || (!gameOver && textAnimationTimer != 0.0f))
-  {
-    if(addedPoints){
-      textAnimationTimer = 0.0f;
-    }
-    textAnimationTimer += dTime.asSeconds();
-    if(fmod(textAnimationTimer, 0.075f) <= 0.035f)
+  if(slowMotion){
+    textPoints.setString(textPoints.getString() + "\nSlowmotion");
+  }
+  if(!pause){
+    if(addedPoints || (!gameOver && textAnimationTimer != 0.0f))
     {
-      textPoints.setCharacterSize(41);
-      textPoints.setColor(sf::Color::Blue);
-    }
-    else
-    {
-      textPoints.setColor(sf::Color::White);
-    }
+      if(addedPoints){
+        textAnimationTimer = 0.0f;
+      }
+      textAnimationTimer += dTime.asSeconds();
+      if(fmod(textAnimationTimer, 0.075f) <= 0.035f)
+      {
+        textPoints.setCharacterSize(41);
+        textPoints.setColor(sf::Color::Blue);
+      }
+      else
+      {
+        textPoints.setColor(sf::Color::White);
+      }
 
-    if(textAnimationTimer >= 0.25f){
-      textAnimationTimer = 0.0f;
-      addedPoints = false;
+      if(textAnimationTimer >= 0.25f){
+        textAnimationTimer = 0.0f;
+        addedPoints = false;
+      }
     }
 }else
   {
     textPoints.setCharacterSize(40);
     textPoints.setColor(sf::Color::White);
+    if (pause) {
+      textAnimationTimer += dTime.asSeconds();
+
+      textPoints.setString("Paused\n" + textPoints.getString());
+      textPoints.setPosition(200, 200);
+      if(fmod(textAnimationTimer, 2.0f) < 1.0f)
+      {
+        textPoints.setCharacterSize(41);
+        textPoints.setColor(sf::Color::Blue);
+      }
+      else
+      {
+        textPoints.setColor(sf::Color::White);
+      }
+    }
   }
 
   if(gameOver){

@@ -35,13 +35,16 @@ private:
 
   bool GameStarted;
   bool gameOver;
+  bool pause;
   int points;
+  std::vector<Highscore> Highscores;
   float multiplier;
   float multiplierTimer;
 
   sf::Clock clock;
   sf::Time dTime;
   float timer;
+  bool slowMotion;
   float slowMotionFactor;
   std::string txt;
   bool addedPoints;
@@ -50,12 +53,11 @@ public:
 
   Game();
   ~Game();
-  bool pause;
-  bool slowMotion;
 
   void NewGame();
   void StartGame();
   void StartGame(sf::Vector2f mousePos);
+  void Pause();
   void NextLevel();
   void GameOver();
   void Update(sf::Event event);
@@ -66,6 +68,9 @@ public:
   void AddMultiplier(int k);
   void ResetPoints();
   void ReadHighscores(std::string filename);
-  void SetHighscore();
+  void PrintHighscores();
+  void SortHighscores();
+  bool CheckIfHighscore();
+  void SetNewHighscores();
   void SlowMotion();
 };
