@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
 #include "game.hpp"
 
 int main ()
@@ -28,6 +29,7 @@ int main ()
   Game* pMyGame = new Game();
   bool slomoButtonPressed = false;
   bool pauseButtonPressed = false;
+  std::string s;
   while (window.isOpen ())
   {
     sf::Event event;
@@ -48,23 +50,42 @@ int main ()
       if (event.type == sf::Event::GainedFocus){
         //menuMusic.play();
       }
-      if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S && !slomoButtonPressed)
-      {
-        pMyGame->SlowMotion();
-        slomoButtonPressed = true;
-      }
-      if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::S)
-      {
-        slomoButtonPressed = false;
-      }
-      if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P && !pauseButtonPressed)
-      {
-        pMyGame->Pause();
-        pauseButtonPressed = true;
-      }
-      if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::P)
-      {
-        pauseButtonPressed = false;
+
+      if(!pMyGame->InputState()) {
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S && !slomoButtonPressed)
+        {
+          pMyGame->SlowMotion();
+          slomoButtonPressed = true;
+        }
+        if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::S)
+        {
+          slomoButtonPressed = false;
+        }
+        if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P && !pauseButtonPressed)
+        {
+          pMyGame->Pause();
+          pauseButtonPressed = true;
+        }
+        if(event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::P)
+        {
+          pauseButtonPressed = false;
+        }
+      }else{
+        if (event.type == sf::Event::TextEntered){
+          if(event.key.code == sf::Keyboard::BackSpace && s.size()!=0){
+            s.pop_back();
+            std::cout << s << std::endl;
+          }
+          else if(event.key.code == sf::Keyboard::Return && s.size()!=0){
+            pMyGame->InputName(s);
+            pMyGame->InputNameState = false;
+            break;
+          }
+          else if (event.text.unicode < 128) {
+            s.push_back((char)event.text.unicode);
+            std::cout << s << std::endl;
+          }
+        }
       }
     }
 

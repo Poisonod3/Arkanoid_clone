@@ -33,6 +33,8 @@ Game::Game(){
   slowMotionFactor = 0.25f;
 
   iCurrentLevel = 0;
+  InputNameState = false;
+  playerNameSet = false;
   GameStarted = false;
   pause = false;
   gameOver = false;
@@ -160,8 +162,19 @@ void Game::GameOver(){
   std::cout << "GAME OVER!" << std::endl;
   std::cout << "You got " << points << " points\n";
   ReadHighscores("highscores.txt");
-  std::cout << CheckIfHighscore() << std::endl;
+  if(CheckIfHighscore()){
+    std::cout << "New Highscore!\n";
+    InputNameState = true;
+  }
   PrintHighscores();
+}
+
+bool Game::InputState () {
+  return InputNameState;
+}
+
+void Game::InputName (std::string name) {
+  SetNewHighscores(name, "highscores.txt");
 }
 
 void Game::CheckCollisions(){
@@ -370,8 +383,18 @@ bool Game::CheckIfHighscore(){
   return false;
 }
 
-void Game::SetNewHighscores () {
+void Game::SetNewHighscores (std::string name, std::string filename) {
+  Highscore newHighscore;
+  newHighscore.nickname = "name";
+  newHighscore.score = points; 
+  Highscores.push_back(newHighscore);
+  SortHighscores();
 
+  std::ofstream highscoreFile;
+  highscoreFile.open (filename, std::ofstream::trunc);
+  for(unsigned int i = 0; i < Highscores.size(); i++){
+    highscoreFile << std::string(Highscores[i].nickname + ":" + std::to_string(Highscores[i].score) + "\n");
+  }
 }
 
 void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
