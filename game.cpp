@@ -34,7 +34,6 @@ Game::Game(){
 
   iCurrentLevel = 0;
   InputNameState = false;
-  playerNameSet = false;
   GameStarted = false;
   pause = false;
   gameOver = false;
@@ -58,50 +57,52 @@ void Game::Update(sf::Event event){
     dTime *= slowMotionFactor;
   }
 
-  HandleInput(event);
+  if (!InputNameState){
+    HandleInput(event);
 
-  if(multiplier > 1.0f) {
-    multiplierTimer += dTime.asSeconds();
-    if(multiplierTimer > 2.0f) {
-      multiplier--;
-      multiplierTimer = 0.0f;
-    }
-  }
-  if(multiplier < 1.0f) {
-    multiplier = 1.0f;
-  }
-
-  if(!gameOver && !pause){
-    pPaddle->Update(dTime);
-    pBall->Update(dTime);
-
-    for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
-      (*it)->Update(dTime);
-    }
-
-    std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
-    std::vector<Tile*>::iterator it;
-    int activeTiles = 0;
-
-    if(vectiles != NULL){
-      for(it = vectiles->begin(); it < vectiles->end(); it++){
-        if((*it)->IsActive()){
-          (*it)->Update();
-          activeTiles++;
-        }
+    if(multiplier > 1.0f) {
+      multiplierTimer += dTime.asSeconds();
+      if(multiplierTimer > 2.0f) {
+        multiplier--;
+        multiplierTimer = 0.0f;
       }
     }
-    if(activeTiles == 0){
-      NextLevel();
+    if(multiplier < 1.0f) {
+      multiplier = 1.0f;
     }
 
-    txt = "Points: " + std::to_string(points);
-    if(multiplier > 1.0f){
-      txt.append(" x");
-      txt.append(std::to_string(int(multiplier)));
+    if(!gameOver && !pause){
+      pPaddle->Update(dTime);
+      pBall->Update(dTime);
+
+      for(std::vector<Yield*>::iterator it = vecYield.begin(); it < vecYield.end(); it++){
+        (*it)->Update(dTime);
+      }
+
+      std::vector<Tile*>* vectiles = vecLevels[iCurrentLevel]->getTiles();
+      std::vector<Tile*>::iterator it;
+      int activeTiles = 0;
+
+      if(vectiles != NULL){
+        for(it = vectiles->begin(); it < vectiles->end(); it++){
+          if((*it)->IsActive()){
+            (*it)->Update();
+            activeTiles++;
+          }
+        }
+      }
+      if(activeTiles == 0){
+        NextLevel();
+      }
+
+      txt = "Points: " + std::to_string(points);
+      if(multiplier > 1.0f){
+        txt.append(" x");
+        txt.append(std::to_string(int(multiplier)));
+      }
+      addedPoints = false;
+      this->CheckCollisions();
     }
-    addedPoints = false;
-    this->CheckCollisions();
   }
 }
 
@@ -159,14 +160,15 @@ void Game::GameOver(){
   multiplier = 1.0f;
   gameOver = true;
   GameStarted = false;
-  std::cout << "GAME OVER!" << std::endl;
-  std::cout << "You got " << points << " points\n";
-  ReadHighscores("highscores.txt");
-  if(CheckIfHighscore()){
-    std::cout << "New Highscore!\n";
-    InputNameState = true;
+  if(pPaddle->OutOfLives()){
+    std::cout << "GAME OVER!" << std::endl;
+    std::cout << "You got " << points << " points\n";
+    ReadHighscores("highscores.txt");
+    if(CheckIfHighscore()){
+      std::cout << "New Highscore!\n";
+      InputNameState = true;
+    }
   }
-  PrintHighscores();
 }
 
 bool Game::InputState () {
@@ -174,7 +176,10 @@ bool Game::InputState () {
 }
 
 void Game::InputName (std::string name) {
+  std::cout << "Inputting name\n";
   SetNewHighscores(name, "highscores.txt");
+  InputNameState = false;
+  PrintHighscores();
 }
 
 void Game::CheckCollisions(){
@@ -339,7 +344,6 @@ void Game::AddMultiplier(int k) {
 
 void Game::ReadHighscores (std::string filename) {
   Highscores.clear();
-  std::cout << "Highscores :\n";
   std::ifstream ifs;
   ifs.open(filename.c_str());
 
@@ -361,6 +365,7 @@ void Game::ReadHighscores (std::string filename) {
 }
 
 void Game::PrintHighscores () {
+  std::cout << "Highscores :\n";
   for(unsigned int i = 0; i < Highscores.size(); i++){
     std::cout << Highscores[i].nickname << " : " << Highscores[i].score << std::endl;
   }
@@ -373,19 +378,20 @@ void Game::SortHighscores () {
       temp = Highscores[i - 1];
       Highscores[i - 1] = Highscores[i];
       Highscores[i] = temp;
+      SortHighscores();
     }
   }
 }
 
 bool Game::CheckIfHighscore(){
-  if(points > Highscores.back().score)
+  if(Highscores.size() < 10 || points > Highscores.back().score)
     return true;
   return false;
 }
 
 void Game::SetNewHighscores (std::string name, std::string filename) {
   Highscore newHighscore;
-  newHighscore.nickname = "name";
+  newHighscore.nickname = name;
   newHighscore.score = points; 
   Highscores.push_back(newHighscore);
   SortHighscores();
@@ -397,7 +403,7 @@ void Game::SetNewHighscores (std::string name, std::string filename) {
   }
 }
 
-void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
+void Game::Render(sf::RenderWindow* pWindow, sf::Font font, std::string PName){
 
   sf::Text textPoints(txt, font);
   textPoints.setCharacterSize(40);
@@ -462,6 +468,25 @@ void Game::Render(sf::RenderWindow* pWindow, sf::Font font){
     else
     {
       textPoints.setColor(sf::Color::White);
+    }
+  }if(gameOver && pPaddle->OutOfLives()){
+    textPoints.setString("Game Over\nEnter nickname\n" + PName);
+    if(!InputNameState){
+      textPoints.setString(textPoints.getString() + "\nR to show highscores\n" + "Space to continue");
+      if(sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
+        bShowHighscores = true;
+      }
+      else{
+        bShowHighscores = false;
+      }
+      if(bShowHighscores){
+        textPoints.setString("");
+        textPoints.setCharacterSize(22);
+        for(unsigned int i = 0; i < Highscores.size(); i++){
+          textPoints.setString(textPoints.getString() + Highscores[i].nickname + " " + std::to_string(Highscores[i].score) + "\n");
+        }
+        textPoints.setString(textPoints.getString() + "Space to continue");
+      }
     }
   }
 

@@ -33,17 +33,17 @@ private:
   std::vector<Level*> vecLevels;
   std::vector<Yield*> vecYield;
 
-  std::string playerName;
-  bool playerNameSet;
   bool GameStarted;
   bool gameOver;
   bool pause;
+  bool bShowHighscores;
   int points;
   std::vector<Highscore> Highscores;
   float multiplier;
   float multiplierTimer;
 
 
+  bool InputNameState;
   sf::Clock clock;
   sf::Time dTime;
   float timer;
@@ -56,7 +56,6 @@ public:
 
   Game();
   ~Game();
-  bool InputNameState;
 
   void NewGame();
   void StartGame();
@@ -66,7 +65,7 @@ public:
   void GameOver();
   bool InputState();
   void Update(sf::Event event);
-  void Render(sf::RenderWindow* pWindow, sf::Font font);
+  void Render(sf::RenderWindow* pWindow, sf::Font font, std::string PName);
   void readLevels(std::string filename);
   void AddPoints(float amount);
   void AddMultiplier();

@@ -1,4 +1,11 @@
+ASD:14070
+PersonalHigh:4240
 Moiu:4231
+Poisonod3:2970
 Poison:1256
-AAA:60
-AAA:5
+Otto:150
+janni:60
+Moi:20
+moi:20
+Poison:10
+Moi:10

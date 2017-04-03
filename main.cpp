@@ -72,13 +72,12 @@ int main ()
         }
       }else{
         if (event.type == sf::Event::TextEntered){
-          if(event.key.code == sf::Keyboard::BackSpace && s.size()!=0){
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace) && s.size()!=0){
             s.pop_back();
-            std::cout << s << std::endl;
           }
-          else if(event.key.code == sf::Keyboard::Return && s.size()!=0){
+          else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && s.size()!=0){
             pMyGame->InputName(s);
-            pMyGame->InputNameState = false;
+            std::cout << "Moi!\n";
             break;
           }
           else if (event.text.unicode < 128) {
@@ -90,7 +89,7 @@ int main ()
     }
 
     pMyGame->Update(event);
-    pMyGame->Render(&window, font);
+    pMyGame->Render(&window, font, s);
   }
   delete pMyGame;
   return 0;
